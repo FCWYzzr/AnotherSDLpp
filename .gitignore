@@ -1,0 +1,8 @@
+dependency
+.idea
+cmake-build-release
+cmake-build-debug
+# to make CLion happy
+working_dir
+/CMakeLists.txt
+/test.cpp
