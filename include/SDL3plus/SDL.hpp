@@ -8,6 +8,6 @@
 #include "SDL3/SDL.h"
 
 #include "SDL_stdinc.hpp"
-
+#include "SDL_assert.hpp"
 
 #endif //SDL_HPP
