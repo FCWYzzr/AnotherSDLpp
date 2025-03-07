@@ -21,7 +21,7 @@ namespace SDL::plus {
 namespace SDL {
     inline namespace type_requirement {
         using UnderlyingType = int;
-        using FunctionPointer = void(*)() noexcept;
+        using FunctionPointer = SDL_FunctionPointer;
     }
 
     constexpr std::uint32_t fourcc(
@@ -168,20 +168,14 @@ namespace SDL {
             );
         }
 
-        // noexcept is a part of func type since c++17
-        using malloc_func = void *(SDLCALL*)(size_t size) noexcept;
-        using calloc_func = void *(SDLCALL *)(size_t n_member, size_t member_size) noexcept;
-        using realloc_func = void *(SDLCALL *)(void*, size_t) noexcept;
-        using free_func = void (SDLCALL *)(void *) noexcept;
-
         struct MemoryFunctions {
-            malloc_func
+            SDL_malloc_func
                 malloc;
-            calloc_func
+            SDL_calloc_func
                 calloc;
-            realloc_func
+            SDL_realloc_func
                 realloc;
-            free_func
+            SDL_free_func
                 free;
         };
 
@@ -314,28 +308,28 @@ namespace SDL {
         using CompareCallback_r = int (SDLCALL *)(void *userdata, const void *a, const void *b);
 
 
-        template<typename T>
+        template<typename T, typename U>
         [[deprecated("why don't you use std::ranges::sort or std::sort ?")]]
-        void qsort(T* base, const size_t length, const CompareCallback_r cmp, void* userdata) noexcept {
+        void qsort(T* base, const size_t length, const CompareCallback_r cmp, U* userdata) noexcept {
             return SDL_qsort_r(
                 static_cast<void*>(base),
                 length,
                 sizeof(T),
                 cmp,
-                userdata
+                static_cast<void*>(userdata)
             );
         }
 
-        template<typename T>
+        template<typename T, typename U>
         [[deprecated("why don't you use std::ranges::binary_search or std::binary_search ?")]]
-        T* bsearch(const T& key, const T base[], const size_t length, const CompareCallback_r compare, void* userdata) noexcept {
+        T* bsearch(const T& key, const T base[], const size_t length, const CompareCallback_r compare, U* userdata) noexcept {
             return SDL_bsearch_r(
                 static_cast<const void*>(&key),
                 static_cast<const void*>(base),
                 length,
                 sizeof(T),
                 compare,
-                userdata
+                static_cast<void*>(userdata)
             );
         }
     }
