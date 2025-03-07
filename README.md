@@ -6,7 +6,7 @@ Another SDLpp is another modern C++ wrapper (C++20 standard) for SDL
 |-----------------------------|---------------------------------------|-------------|
 | SDL.h                       | [FCWYzzr](https://github.com/FCWYzzr) | In Progress |
 | SDL_assert.h                | [FCWYzzr](https://github.com/FCWYzzr) | Done        |
-| SDL_asyncio.h               | NONE                                  |             |
+| SDL_asyncio.h               | [FCWYzzr](https://github.com/FCWYzzr) | Done        |
 | SDL_atomic.h                | NONE                                  |             |
 | SDL_audio.h                 | NONE                                  |             |
 | SDL_begin_code.h            | NONE                                  |             |

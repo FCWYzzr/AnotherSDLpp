@@ -16,18 +16,20 @@ namespace SDL::assert {
     // };
     using AssertState = SDL_AssertState;
     using AssertData = SDL_AssertData;
-    using AssertionHandler = SDL_AssertState (SDLCALL *)(const AssertData *, void *userdata) noexcept;
+    using AssertionHandler = SDL_AssertionHandler;
 
-    inline void SetAssertionHandler(AssertionHandler handler, void* data) noexcept {
-        return SDL_SetAssertionHandler(handler, data);
+    template<typename T>
+    void SetAssertionHandler(const AssertionHandler handler, T* data) noexcept {
+        return SDL_SetAssertionHandler(handler, static_cast<void*>(data));
     }
 
     inline AssertionHandler GetDefaultAssertionHandler() noexcept {
         return reinterpret_cast<AssertionHandler>(SDL_GetDefaultAssertionHandler());
     }
 
-    inline AssertionHandler GetAssertionHandler(void **puserdata) noexcept {
-        return reinterpret_cast<AssertionHandler>(SDL_GetAssertionHandler(puserdata));
+    template<typename T>
+    AssertionHandler GetAssertionHandler(T **puserdata) noexcept {
+        return SDL_GetAssertionHandler(reinterpret_cast<void**>(puserdata));
     }
 
     inline const AssertData* GetAssertionReport() noexcept {

@@ -9,5 +9,7 @@
 
 #include "SDL_stdinc.hpp"
 #include "SDL_assert.hpp"
+#include "SDL_asyncio.hpp"
+
 
 #endif //SDL_HPP
