@@ -9,10 +9,8 @@
 
 #include "SDL_stdinc.hpp"
 #include "SDL_assert.hpp"
-<<<<<<< HEAD
 #include "SDL_asyncio.hpp"
-
-=======
->>>>>>> 6643f2b (finish SDL_assert.hpp)
+#include "SDL_atomic.hpp"
+#include "SDL_audio.hpp"
 
 #endif //SDL_HPP
