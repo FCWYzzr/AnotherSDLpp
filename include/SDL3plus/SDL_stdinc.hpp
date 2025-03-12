@@ -1343,5 +1343,41 @@ namespace SDL::plus {
     }
 }
 
+namespace SDL::plus {
+    template<typename T>
+    struct List {
+        T* data{nullptr};
+        int size{0};
+
+        constexpr List(T* const data, const int size) noexcept:
+            data{data},
+            size{size} {}
+
+        List(const List& other)=delete;
+        List& operator=(const List& other)=delete;
+
+
+        List(List&& other) noexcept {
+            std::swap(data, other.data);
+            std::swap(size, other.size);
+        }
+
+        List& operator = (List&& other) noexcept{
+            std::swap(data, other.data);
+            std::swap(size, other.size);
+            return *this;
+        }
+
+        ~List() {
+            if (data)
+                free(data);
+        }
+
+        constexpr T& operator [] (const int i) noexcept {
+            return data[i];
+        }
+    };
+}
+
 
 #endif //SDL_STDINC_HPP
