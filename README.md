@@ -19,8 +19,8 @@ Another SDLpp is another modern C++ wrapper (C++20 standard) for SDL
 | SDL_cpuinfo.h               | NONE                                  |             |
 | SDL_dialog.h                | NONE                                  |             |
 | SDL_egl.h                   | NONE                                  |             |
-| SDL_endian.h                | NONE                                  |             |
-| SDL_error.h                 | NONE                                  |             |
+| SDL_endian.h                | NONE                                  | NO NEED     |
+| SDL_error.h                 | NONE                                  | NO NEED     |
 | SDL_events.h                | NONE                                  |             |
 | SDL_filesystem.h            | NONE                                  |             |
 | SDL_gamepad.h               | NONE                                  |             |
@@ -31,7 +31,7 @@ Another SDLpp is another modern C++ wrapper (C++20 standard) for SDL
 | SDL_hints.h                 | NONE                                  |             |
 | SDL_init.h                  | NONE                                  |             |
 | SDL_intrin.h                | NONE                                  |             |
-| SDL_iostream.h              | NONE                                  |             |
+| SDL_iostream.h              | [FCWYzzr](https://github.com/FCWYzzr) | In Progress |
 | SDL_joystick.h              | NONE                                  |             |
 | SDL_keyboard.h              | NONE                                  |             |
 | SDL_keycode.h               | NONE                                  |             |
@@ -44,7 +44,7 @@ Another SDLpp is another modern C++ wrapper (C++20 standard) for SDL
 | SDL_metal.h                 | NONE                                  |             |
 | SDL_misc.h                  | NONE                                  |             |
 | SDL_mouse.h                 | NONE                                  |             |
-| SDL_mutex.h                 | NONE                                  |             |
+| SDL_mutex.h                 | [FCWYzzr](https://github.com/FCWYzzr) | In Progress |
 | SDL_oldnames.h              | NONE                                  |             |
 | SDL_opengl.h                | NONE                                  |             |
 | SDL_opengles.h              | NONE                                  |             |
@@ -60,7 +60,7 @@ Another SDLpp is another modern C++ wrapper (C++20 standard) for SDL
 | SDL_platform_defines.h      | NONE                                  |             |
 | SDL_power.h                 | NONE                                  |             |
 | SDL_process.h               | NONE                                  |             |
-| SDL_properties.h            | NONE                                  |             |
+| SDL_properties.h            | [FCWYzzr](https://github.com/FCWYzzr) | In Progress |
 | SDL_rect.h                  | NONE                                  |             |
 | SDL_render.h                | NONE                                  |             |
 | SDL_revision.h              | NONE                                  |             |

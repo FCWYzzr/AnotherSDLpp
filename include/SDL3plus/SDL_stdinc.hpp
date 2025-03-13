@@ -203,17 +203,16 @@ namespace SDL {
             return cache;
         }
 
-        // throw an exception is much more heavy than bool result
-        // so users shall call GetError by themselves
-        inline bool SetMemoryFunctions(
+        inline void SetMemoryFunctions(
             const MemoryFunctions& function_pack
-        ) noexcept {
-            return SDL_SetMemoryFunctions(
+        ) {
+            if (!SDL_SetMemoryFunctions(
                 function_pack.malloc,
                 function_pack.calloc,
                 function_pack.realloc,
                 function_pack.free
-            );
+            ))
+                throw plus::Error{};
         }
 
         // aligned mem
@@ -269,11 +268,13 @@ namespace SDL {
             inline const char* getenv(const char* key) noexcept {
                 return SDL_getenv_unsafe(key);
             }
-            inline bool setenv(const char* key, const char* value, const bool overwrite) noexcept {
-                return SDL_setenv_unsafe(key, value, overwrite) != 0;
+            inline void setenv(const char* key, const char* value, const bool overwrite) {
+                if (SDL_setenv_unsafe(key, value, overwrite)== -1)
+                    throw plus::Error{};
             }
-            inline bool unsetenv(const char* key) noexcept {
-                return SDL_unsetenv_unsafe(key) != 0;
+            inline void unsetenv(const char* key) {
+                if (SDL_unsetenv_unsafe(key) == -1)
+                    throw plus::Error{};
             }
         }
     }
