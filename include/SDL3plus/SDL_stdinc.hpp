@@ -11,7 +11,7 @@
 #include <ranges>
 #include <functional>
 
-namespace SDL::plus {
+namespace SDL {
     struct Error final: std::runtime_error{
         Error() noexcept:
             runtime_error{SDL_GetError()}{}
@@ -76,7 +76,7 @@ namespace SDL {
         T* malloc() {
             auto v = static_cast<T*>(SDL_malloc(sizeof(T)));
             if (!v)
-                throw plus::Error{};
+                throw Error{};
             return v;
         }
 
@@ -84,7 +84,7 @@ namespace SDL {
         T* calloc(const std::size_t length) noexcept {
             auto v = static_cast<T*>(SDL_calloc(length, sizeof(T)));
             if (!v)
-                throw plus::Error{};
+                throw Error{};
             return v;
         }
 
@@ -92,7 +92,7 @@ namespace SDL {
         T* realloc(T* const mem, const std::size_t neosize) noexcept {
             auto v = static_cast<T*>(SDL_realloc(static_cast<void*>(mem), neosize));
             if (!v)
-                throw plus::Error{};
+                throw Error{};
             return v;
         }
 
@@ -212,7 +212,7 @@ namespace SDL {
                 function_pack.realloc,
                 function_pack.free
             ))
-                throw plus::Error{};
+                throw Error{};
         }
 
         // aligned mem
@@ -232,7 +232,7 @@ namespace SDL {
         }
     }
 
-    namespace plus::inline memory {
+    namespace inline memory {
         template<typename T, bool is_aligned>
         struct Deletor;
 
@@ -270,11 +270,11 @@ namespace SDL {
             }
             inline void setenv(const char* key, const char* value, const bool overwrite) {
                 if (SDL_setenv_unsafe(key, value, overwrite)== -1)
-                    throw plus::Error{};
+                    throw Error{};
             }
             inline void unsetenv(const char* key) {
                 if (SDL_unsetenv_unsafe(key) == -1)
-                    throw plus::Error{};
+                    throw Error{};
             }
         }
     }
@@ -464,8 +464,8 @@ namespace SDL {
             return SDL_wcslcat(dest, src, max_size);
         }
 
-        inline plus::unique_ptr<wchar_t> wcsdup(const wchar_t *wstr) noexcept {
-            return plus::unique_ptr<wchar_t>{
+        inline unique_ptr<wchar_t> wcsdup(const wchar_t *wstr) noexcept {
+            return unique_ptr<wchar_t>{
                 SDL_wcsdup(wstr)
             };
         }
@@ -527,14 +527,14 @@ namespace SDL {
             return SDL_strlcat(dest, src, max_size);
         }
 
-        inline plus::unique_ptr<char> strdup(const char *str) noexcept {
-            return plus::unique_ptr<char>{
+        inline unique_ptr<char> strdup(const char *str) noexcept {
+            return unique_ptr<char>{
                 SDL_strdup(str)
             };
         }
 
-        inline plus::unique_ptr<char> strndup(const char *str, const std::size_t maxlen) noexcept {
-            return plus::unique_ptr<char>{
+        inline unique_ptr<char> strndup(const char *str, const std::size_t maxlen) noexcept {
+            return unique_ptr<char>{
                 SDL_strndup(str, maxlen)
             };
         }
@@ -708,14 +708,14 @@ namespace SDL {
         }
 
         template<typename ...Ts>
-        int asprintf(plus::memory::unique_ptr<char>& container, const char* fmt, Ts... args) noexcept {
+        int asprintf(memory::unique_ptr<char>& container, const char* fmt, Ts... args) noexcept {
             char* ptr;
             const auto ret = SDL_asprintf(&ptr, fmt, std::forward<Ts>(args)...);
             container.reset(ptr);
             return ret;
         }
 
-        inline int vasprintf(plus::memory::unique_ptr<char>& container, const char* fmt, const va_list ap) noexcept {
+        inline int vasprintf(memory::unique_ptr<char>& container, const char* fmt, const va_list ap) noexcept {
             char* ptr;
             const auto ret = SDL_vasprintf(&ptr, fmt, ap);
             container.reset(ptr);
@@ -968,7 +968,7 @@ namespace SDL {
     }
 }
 
-namespace SDL::plus {
+namespace SDL {
     inline namespace memory {
         template<typename T, bool is_aligned=false>
         struct Allocator;
@@ -1042,8 +1042,8 @@ namespace SDL::plus {
                 return SDL_GetEnvironmentVariable(handle, key);
             }
 
-            plus::unique_ptr<char*> getVariables() const noexcept {
-                return plus::unique_ptr<char*>{
+            unique_ptr<char*> getVariables() const noexcept {
+                return unique_ptr<char*>{
                     SDL_GetEnvironmentVariables(handle)
                 };
             }
@@ -1087,7 +1087,7 @@ namespace SDL::plus {
 
             struct VariablePack {
                 using iterator = char**;
-                plus::unique_ptr<char*>
+                unique_ptr<char*>
                     pack;
 
                 auto begin() const noexcept {
@@ -1344,12 +1344,12 @@ namespace SDL::plus {
     }
 }
 
-namespace SDL::plus {
+namespace SDL {
     template<typename T>
     struct List {
         T* data{nullptr};
         int size{0};
-
+        constexpr List() =default;
         constexpr List(T* const data, const int size) noexcept:
             data{data},
             size{size} {}
