@@ -6,7 +6,7 @@
 #define SDL_ERROR_HPP
 #include <SDL3/SDL_Error.h>
 
-namespace SDL::plus {
+namespace SDL {
     struct Error;
 }
 

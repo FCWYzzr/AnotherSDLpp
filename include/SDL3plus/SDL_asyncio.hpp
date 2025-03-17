@@ -11,7 +11,7 @@ namespace SDL::AsyncIO {
     using Outcome = struct SDL_AsyncIOOutcome;
 }
 
-namespace SDL::plus::AsyncIO{
+namespace SDL::AsyncIO{
     enum class TaskType: UnderlyingType {
         READ = SDL_ASYNCIO_TASK_READ,
         WRITE = SDL_ASYNCIO_TASK_WRITE,
