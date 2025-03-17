@@ -81,7 +81,7 @@ Another SDLpp is another modern C++ wrapper (C++20 standard) for SDL
 | SDL_test_log.h              | NONE                                  |             |
 | SDL_test_md5.h              | NONE                                  |             |
 | SDL_test_memory.h           | NONE                                  |             |
-| SDL_thread.h                | NONE                                  |             |
+| SDL_thread.h                | [FCWYzzr](https://github.com/FCWYzzr) | In Progress |
 | SDL_time.h                  | NONE                                  |             |
 | SDL_timer.h                 | NONE                                  |             |
 | SDL_touch.h                 | NONE                                  |             |
