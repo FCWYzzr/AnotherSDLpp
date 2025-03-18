@@ -14,9 +14,8 @@
 #include "SDL_iostream.hpp"
 #include <ranges>
 
-namespace SDL::inline audio {
-
-    namespace mask {
+namespace SDL{
+    namespace audio_mask {
         constexpr auto size         =  SDL_AUDIO_MASK_BITSIZE;
         constexpr auto floating     =  SDL_AUDIO_MASK_FLOAT;
         constexpr auto big_endian   =  SDL_AUDIO_MASK_BIG_ENDIAN;
@@ -24,7 +23,7 @@ namespace SDL::inline audio {
     }
 
 
-    enum class Format {
+    enum class AudioFormat {
         UNKNOWN = SDL_AUDIO_UNKNOWN,
         U8      = SDL_AUDIO_U8,
         S8      = SDL_AUDIO_S8,
@@ -38,65 +37,67 @@ namespace SDL::inline audio {
         F32LE   = SDL_AUDIO_F32LE,
         F32BE   = SDL_AUDIO_F32BE
     };
+    constexpr SDL_AudioFormat legacy(const AudioFormat format) noexcept {
+        return static_cast<SDL_AudioFormat>(format);
+    }
 
-    inline std::string_view to_string(const Format format) {
+    inline std::string_view to_string(const AudioFormat format) {
         return SDL_GetAudioFormatName(static_cast<SDL_AudioFormat>(format));
     }
 
-    inline int silent_value(const Format format) {
-        return SDL_GetSilenceValueForFormat(static_cast<SDL_AudioFormat>(format));
+    inline int silent_value(const AudioFormat format) {
+        return SDL_GetSilenceValueForFormat(legacy(format));
     }
 
-    constexpr Format make_format(const bool with_sign, const bool is_bigendian, const bool is_float, const unsigned char size) noexcept {
-        return static_cast<Format>(SDL_DEFINE_AUDIO_FORMAT(with_sign, is_bigendian, is_float, size));
+    constexpr AudioFormat make_format(const bool with_sign, const bool is_bigendian, const bool is_float, const unsigned char size) noexcept {
+        return static_cast<AudioFormat>(SDL_DEFINE_AUDIO_FORMAT(with_sign, is_bigendian, is_float, size));
     }
 
-    constexpr auto bitsize(const Format x) {
+    constexpr auto bitsize(const AudioFormat x) {
         return static_cast<Uint16>(x) & SDL_AUDIO_MASK_BITSIZE;
     }
 
-    constexpr auto bytesize(const Format x) {
+    constexpr auto bytesize(const AudioFormat x) {
         return bitsize(x) / 8;
     }
 
-    constexpr bool is_float(const Format x) {
+    constexpr bool is_float(const AudioFormat x) {
         return static_cast<Uint16>(x) & SDL_AUDIO_MASK_FLOAT;
     }
 
-    constexpr bool is_bigendian(const Format x) {
+    constexpr bool is_bigendian(const AudioFormat x) {
         return static_cast<Uint16>(x) & SDL_AUDIO_MASK_BIG_ENDIAN;
     }
 
-    constexpr bool is_littleendian(const Format x) {
+    constexpr bool is_littleendian(const AudioFormat x) {
         return !is_bigendian(x);
     }
 
-    constexpr bool is_signed(const Format x) {
+    constexpr bool is_signed(const AudioFormat x) {
         return static_cast<Uint16>(x) & SDL_AUDIO_MASK_BITSIZE;
     }
 
-    enum class DeviceID: Uint32{};
+    enum class AudioDeviceID: Uint32{};
+    constexpr SDL_AudioDeviceID legacy(const AudioDeviceID device) noexcept {
+        return static_cast<SDL_AudioDeviceID>(device);
+    }
 
-    constexpr auto default_playback = static_cast<DeviceID>(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK);
-    constexpr auto default_recording = static_cast<DeviceID>(SDL_AUDIO_DEVICE_DEFAULT_RECORDING);
+    constexpr auto default_playback = static_cast<AudioDeviceID>(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK);
+    constexpr auto default_recording = static_cast<AudioDeviceID>(SDL_AUDIO_DEVICE_DEFAULT_RECORDING);
 
-
-}
-
-namespace SDL::inline audio {
-    struct Spec {
-        Format format;
+    struct AudioSpec {
+        AudioFormat format;
         int channels;
         int freq;
 
-        Spec()=default;
+        AudioSpec()=default;
 
-        Spec(const Format format, const int channels, const int freq) noexcept:
+        AudioSpec(const AudioFormat format, const int channels, const int freq) noexcept:
             format{format},
             channels{channels},
             freq{freq} {}
 
-        Spec(const SDL_AudioSpec& other) noexcept:
+        AudioSpec(const SDL_AudioSpec& other) noexcept:
             format{other.format},
             channels{other.channels},
             freq{other.freq} {}
@@ -121,7 +122,7 @@ namespace SDL::inline audio {
         }
     };
 
-    namespace Driver {
+    namespace AudioDriver {
         inline int size() noexcept {
             return SDL_GetNumAudioDrivers();
         }
@@ -135,26 +136,26 @@ namespace SDL::inline audio {
         }
     };
 
-    struct Device;
+    struct AudioDevice;
 
-    struct Stream {
+    struct AudioStream {
         using handle_t = SDL_AudioStream*;
 
         handle_t
             handle;
 
-        explicit Stream(handle_t handle):
+        explicit AudioStream(handle_t handle):
             handle{handle} {
             if (!handle)
                 throw Error{};
         }
 
-        Stream(const Spec& from, const Spec& to):
-            Stream{SDL_CreateAudioStream(from.legacy_addr(), to.legacy_addr())} {
+        AudioStream(const AudioSpec& from, const AudioSpec& to):
+            AudioStream{SDL_CreateAudioStream(from.legacy_addr(), to.legacy_addr())} {
 
         }
 
-        void set_format(const Spec& from, const Spec& to) {
+        void set_format(const AudioSpec& from, const AudioSpec& to) {
             if (!SDL_SetAudioStreamFormat(handle, from.legacy_addr(), to.legacy_addr()))
                 throw Error{};
         }
@@ -211,9 +212,9 @@ namespace SDL::inline audio {
         }
 
         // ReSharper disable CppMemberFunctionMayBeConst
-        void bind(const Device& device);
+        void bind(const AudioDevice& device);
 
-        void rebind(const Device& device) {
+        void rebind(const AudioDevice& device) {
             unbind();
             bind(device);
         }
@@ -222,8 +223,8 @@ namespace SDL::inline audio {
             return SDL_UnbindAudioStream(handle);
         }
 
-        DeviceID binding() const noexcept {
-            return static_cast<DeviceID>(SDL_GetAudioStreamDevice(handle));
+        AudioDeviceID binding() const noexcept {
+            return static_cast<AudioDeviceID>(SDL_GetAudioStreamDevice(handle));
         }
 
         template<typename string_t=std::string>
@@ -231,8 +232,8 @@ namespace SDL::inline audio {
             return SDL_GetAudioStreamProperties(handle);
         }
 
-        std::pair<Spec, Spec> format() const  {
-            auto ret = std::pair<Spec, Spec>{};
+        std::pair<AudioSpec, AudioSpec> format() const  {
+            auto ret = std::pair<AudioSpec, AudioSpec>{};
             if (!SDL_GetAudioStreamFormat(handle, ret.first.legacy_addr(), ret.second.legacy_addr()))
                 throw Error{};
             return ret;
@@ -303,14 +304,14 @@ namespace SDL::inline audio {
                 throw Error{};
         }
 
-        ~Stream() noexcept{
+        ~AudioStream() noexcept{
             SDL_DestroyAudioStream(handle);
         }
 
         template<std::ranges::range Range>
         static void unbind(const Range& streams){
             auto cache = std::vector<SDL_AudioStream*>{};
-            for (Stream& e: streams)
+            for (AudioStream& e: streams)
                 cache.emplace_back(e.handle);
 
             SDL_UnbindAudioStreams(cache.data(), cache.size());
@@ -318,38 +319,38 @@ namespace SDL::inline audio {
 
 
         template<std::ranges::range Range>
-        static void bind(const Device& device, const Range& streams);
+        static void bind(const AudioDevice& device, const Range& streams);
     };
 
 
 
-    struct Device {
-        DeviceID id;
+    struct AudioDevice {
+        AudioDeviceID id;
 
         // this id will NOT promise to be the member
         // return value of SDL_OpenAudioDevice will be used
-        Device(DeviceID id, const Spec& spec):
+        AudioDevice(AudioDeviceID id, const AudioSpec& spec):
             id{SDL_OpenAudioDevice(legacy_id(), reinterpret_cast<const SDL_AudioSpec*>(&spec))}{
             if (static_cast<Uint32>(id) == 0)
                 throw Error{};
         }
 
-        explicit Device(DeviceID id):
+        explicit AudioDevice(AudioDeviceID id):
             id{SDL_OpenAudioDevice(legacy_id(), nullptr)}{
             if (static_cast<Uint32>(id) == 0)
                 throw Error{};
         }
 
-        ~Device() noexcept {
+        ~AudioDevice() noexcept {
             SDL_CloseAudioDevice(legacy_id());
         }
 
-        Device duplicate() const {
-            return Device{id};
+        AudioDevice duplicate() const {
+            return AudioDevice{id};
         }
 
-        Device duplicate(const Spec& spec) const {
-            return Device{id, spec};
+        AudioDevice duplicate(const AudioSpec& spec) const {
+            return AudioDevice{id, spec};
         }
 
 
@@ -360,8 +361,8 @@ namespace SDL::inline audio {
             return name;
         }
 
-        std::pair<Spec, int> format() const {
-            std::pair<Spec, int> ret;
+        std::pair<AudioSpec, int> format() const {
+            std::pair<AudioSpec, int> ret;
             if (!SDL_GetAudioDeviceFormat(
                 legacy_id(),
                 reinterpret_cast<SDL_AudioSpec*>(&ret.first),
@@ -420,30 +421,30 @@ namespace SDL::inline audio {
 
 
         template<typename... Args>
-        static Device open_default_playback(Args&& arg) {
-            return Device{default_playback, std::forward<Args>(arg)...};
+        static AudioDevice open_default_playback(Args&& arg) {
+            return AudioDevice{default_playback, std::forward<Args>(arg)...};
         }
 
         template<typename... Args>
-        static Device open_default_recording(Args&& arg) {
-            return Device{default_recording, std::forward<Args>(arg)...};
+        static AudioDevice open_default_recording(Args&& arg) {
+            return AudioDevice{default_recording, std::forward<Args>(arg)...};
         }
         [[nodiscard]]
-        static List<Device>
+        static List<AudioDevice>
             playback_devices()  {
             int size;
             auto data = SDL_GetAudioPlaybackDevices(&size);
             if (!data)
                 throw Error{};
-            return {reinterpret_cast<Device*>(data), size};
+            return {reinterpret_cast<AudioDevice*>(data), size};
         }
 
-        Stream open(const Spec& spec, Stream::Callback callback=nullptr, void* data=nullptr) {
+        AudioStream open(const AudioSpec& spec, AudioStream::Callback callback=nullptr, void* data=nullptr) {
             if (const auto stream_id = SDL_OpenAudioDeviceStream(legacy_id(), spec.legacy_addr(), callback, data);
                 !stream_id)
                 throw Error{};
             else
-                return Stream{stream_id};
+                return AudioStream{stream_id};
 
         }
 
@@ -455,25 +456,25 @@ namespace SDL::inline audio {
         }
 
         [[nodiscard]]
-        static List<Device>
+        static List<AudioDevice>
             recording_devices()  {
             int size;
             auto data = SDL_GetAudioRecordingDevices(&size);
             if (!data)
                 throw Error{};
-            return {reinterpret_cast<Device*>(data), size};
+            return {reinterpret_cast<AudioDevice*>(data), size};
         }
     };
 
-    inline void Stream::bind(const Device& device) {
+    inline void AudioStream::bind(const AudioDevice& device) {
         if (!SDL_BindAudioStream(device.legacy_id(), handle))
             throw Error{};
     }
 
     template<std::ranges::range Range>
-    void Stream::bind(const Device& device, const Range& streams) {
+    void AudioStream::bind(const AudioDevice& device, const Range& streams) {
         auto cache = std::vector<SDL_AudioStream*>{};
-        for (Stream& e: streams)
+        for (AudioStream& e: streams)
             cache.emplace_back(e.handle);
 
         if (!SDL_BindAudioStreams(device.legacy_id(), cache.data(), cache.size()))
@@ -481,8 +482,8 @@ namespace SDL::inline audio {
     }
 
 
-    inline std::pair<Spec, List<Uint8>> load_wav(SDL_IOStream* ios, bool close) {
-        auto ret = std::pair<Spec, List<Uint8>>{};
+    inline std::pair<AudioSpec, List<Uint8>> load_wav(SDL_IOStream* ios, bool close) {
+        auto ret = std::pair<AudioSpec, List<Uint8>>{};
 
         Uint32 size;
         if (!SDL_LoadWAV_IO(ios, close, ret.first.legacy_addr(), &ret.second.data, &size))
@@ -491,8 +492,8 @@ namespace SDL::inline audio {
         return std::move(ret);
     }
 
-    inline std::pair<Spec, List<Uint8>> load_wav(const std::filesystem::path& path) {
-        auto ret = std::pair<Spec, List<Uint8>>{};
+    inline std::pair<AudioSpec, List<Uint8>> load_wav(const std::filesystem::path& path) {
+        auto ret = std::pair<AudioSpec, List<Uint8>>{};
         Uint32 size;
         if (!SDL_LoadWAV(reinterpret_cast<const char*>(path.generic_u8string().c_str()), ret.first.legacy_addr(), &ret.second.data, &size))
             throw Error{};
@@ -500,12 +501,12 @@ namespace SDL::inline audio {
         return std::move(ret);
     }
 
-    inline void mix_audio(Uint8 *dst, const Uint8 *src, Format format, Uint32 len, float volume) {
+    inline void mix_audio(Uint8 *dst, const Uint8 *src, AudioFormat format, Uint32 len, float volume) {
         if (!SDL_MixAudio(dst, src, static_cast<SDL_AudioFormat>(format), len, volume))
             throw Error{};
     }
 
-    inline void convert_samples(const Spec& src_spec, const List<Uint8>& src, const Spec& dst_spec, List<Uint8>& dst) {
+    inline void convert_samples(const AudioSpec& src_spec, const List<Uint8>& src, const AudioSpec& dst_spec, List<Uint8>& dst) {
         if (!SDL_ConvertAudioSamples(src_spec.legacy_addr(), src.data, src.size, dst_spec.legacy_addr(), &dst.data, &dst.size))
             throw Error{};
     }
