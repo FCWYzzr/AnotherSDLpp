@@ -7,21 +7,25 @@
 #include <SDL3/SDL_asyncio.h>
 #include <filesystem>
 
-namespace SDL::AsyncIO {
-    using Outcome = struct SDL_AsyncIOOutcome;
-}
-
 namespace SDL::AsyncIO{
     enum class TaskType: UnderlyingType {
         READ = SDL_ASYNCIO_TASK_READ,
         WRITE = SDL_ASYNCIO_TASK_WRITE,
         CLOSE = SDL_ASYNCIO_TASK_CLOSE
     };
+    constexpr SDL_AsyncIOTaskType legacy(const TaskType type) noexcept {
+        return static_cast<SDL_AsyncIOTaskType>(type);
+    }
+
     enum class Result: UnderlyingType {
         COMPLETE = SDL_ASYNCIO_COMPLETE,
         FAILURE = SDL_ASYNCIO_FAILURE,
         CANCELED = SDL_ASYNCIO_CANCELED
     };
+    constexpr SDL_AsyncIOResult legacy(const Result type) noexcept {
+        return static_cast<SDL_AsyncIOResult>(type);
+    }
+
     struct Outcome {
         SDL_AsyncIO*
             asyncio;
@@ -41,7 +45,7 @@ namespace SDL::AsyncIO{
             v_userdata;
 
         // ReSharper disable once CppNonExplicitConvertingConstructor
-        Outcome(const SDL::AsyncIO::Outcome& underly) noexcept:
+        Outcome(const Outcome& underly) noexcept:
             asyncio{underly.asyncio},
             type{underly.type},
             result{underly.result},
@@ -52,7 +56,7 @@ namespace SDL::AsyncIO{
             v_userdata{underly.userdata}{}
 
         // ReSharper disable once CppNonExplicitConversionOperator
-        operator SDL::AsyncIO::Outcome () noexcept {
+        operator SDL_AsyncIOOutcome () noexcept {
             return {
                 asyncio,
                 static_cast<SDL_AsyncIOTaskType>(static_cast<UnderlyingType>(type)),
@@ -74,7 +78,20 @@ namespace SDL::AsyncIO{
         T* userdata() const noexcept {
             return static_cast<T*>(userdata);
         }
+
+        Outcome& operator = (const SDL_AsyncIOOutcome& sdl_async_io_outcome) {
+            asyncio = sdl_async_io_outcome.asyncio;
+            type = static_cast<TaskType>(sdl_async_io_outcome.type);
+            result = static_cast<Result>(sdl_async_io_outcome.result);
+            v_buffer = sdl_async_io_outcome.buffer;
+            offset = sdl_async_io_outcome.offset;
+            bytes_requested = sdl_async_io_outcome.bytes_requested;
+            bytes_transferred = sdl_async_io_outcome.bytes_transferred;
+            v_userdata = sdl_async_io_outcome.userdata;
+            return *this;
+        }
     };
+
     struct TaskQueue {
         using handle_t = SDL_AsyncIOQueue*;
 
@@ -105,21 +122,21 @@ namespace SDL::AsyncIO{
 
         // ReSharper disable CppMemberFunctionMayBeConst
         bool get(Outcome& result) noexcept {
-            SDL::AsyncIO::Outcome o;
+            SDL_AsyncIOOutcome o;
             const auto ret = SDL_GetAsyncIOResult(handle, &o);
             result = o;
             return ret;
         }
 
         bool wait(Outcome& result, const std::chrono::milliseconds timeout) noexcept {
-            SDL::AsyncIO::Outcome o;
+            SDL_AsyncIOOutcome o;
             const auto ret = SDL_WaitAsyncIOResult(handle, &o, timeout.count());
             result = o;
             return ret;
         }
 
         bool wait(Outcome& result) noexcept {
-            SDL::AsyncIO::Outcome o;
+            SDL_AsyncIOOutcome o;
             const auto ret = SDL_WaitAsyncIOResult(handle, &o, -1);
             result = o;
             return ret;
@@ -150,8 +167,6 @@ namespace SDL::AsyncIO{
                     SDL_DestroyAsyncIOQueue(handle);
             }
         }
-
-
     };
 
     struct Task {

@@ -10,8 +10,8 @@ Another SDLpp is another modern C++ wrapper (C++20 standard) for SDL
 | SDL_atomic.h                | [FCWYzzr](https://github.com/FCWYzzr) | Done        |
 | SDL_audio.h                 | [FCWYzzr](https://github.com/FCWYzzr) | Done        |
 | SDL_begin_code.h            | [FCWYzzr](https://github.com/FCWYzzr) | NO NEED     |
-| SDL_bits.h                  | NONE                                  |             |
-| SDL_blendmode.h             | NONE                                  |             |
+| SDL_bits.h                  | [FCWYzzr](https://github.com/FCWYzzr) | Done        |
+| SDL_blendmode.h             | [FCWYzzr](https://github.com/FCWYzzr) | Done        |
 | SDL_camera.h                | NONE                                  |             |
 | SDL_clipboard.h             | NONE                                  |             |
 | SDL_close_code.h            | [FCWYzzr](https://github.com/FCWYzzr) | NO NEED     |

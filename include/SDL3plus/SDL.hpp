@@ -12,5 +12,7 @@
 #include "SDL_asyncio.hpp"
 #include "SDL_atomic.hpp"
 #include "SDL_audio.hpp"
+#include "SDL_bits.hpp"
+#include "SDL_blendmode.hpp"
 
 #endif //SDL_HPP
