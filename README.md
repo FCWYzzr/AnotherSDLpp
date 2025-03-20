@@ -12,7 +12,7 @@ Another SDLpp is another modern C++ wrapper (C++20 standard) for SDL
 | SDL_begin_code.h            | [FCWYzzr](https://github.com/FCWYzzr) | NO NEED     |
 | SDL_bits.h                  | [FCWYzzr](https://github.com/FCWYzzr) | Done        |
 | SDL_blendmode.h             | [FCWYzzr](https://github.com/FCWYzzr) | Done        |
-| SDL_camera.h                | NONE                                  |             |
+| SDL_camera.h                | [FCWYzzr](https://github.com/FCWYzzr) | In Progress |
 | SDL_clipboard.h             | NONE                                  |             |
 | SDL_close_code.h            | [FCWYzzr](https://github.com/FCWYzzr) | NO NEED     |
 | SDL_copying.h               | NONE                                  |             |
@@ -55,20 +55,20 @@ Another SDLpp is another modern C++ wrapper (C++20 standard) for SDL
 | SDL_opengles2_khrplatform.h | NONE                                  |             |
 | SDL_opengl_glext.h          | NONE                                  |             |
 | SDL_pen.h                   | NONE                                  |             |
-| SDL_pixels.h                | NONE                                  |             |
+| SDL_pixels.h                | [FCWYzzr](https://github.com/FCWYzzr) | In Progress |
 | SDL_platform.h              | NONE                                  |             |
 | SDL_platform_defines.h      | NONE                                  |             |
 | SDL_power.h                 | NONE                                  |             |
 | SDL_process.h               | NONE                                  |             |
 | SDL_properties.h            | [FCWYzzr](https://github.com/FCWYzzr) | Done        |
-| SDL_rect.h                  | NONE                                  |             |
+| SDL_rect.h                  | [FCWYzzr](https://github.com/FCWYzzr) | In Progress |
 | SDL_render.h                | NONE                                  |             |
 | SDL_revision.h              | NONE                                  |             |
 | SDL_scancode.h              | NONE                                  |             |
 | SDL_sensor.h                | NONE                                  |             |
 | SDL_stdinc.h                | [FCWYzzr](https://github.com/FCWYzzr) | Done        |
 | SDL_storage.h               | NONE                                  |             |
-| SDL_surface.h               | NONE                                  |             |
+| SDL_surface.h               | [FCWYzzr](https://github.com/FCWYzzr) | In Progress |
 | SDL_system.h                | NONE                                  |             |
 | SDL_test.h                  | NONE                                  |             |
 | SDL_test_assert.h           | NONE                                  |             |
