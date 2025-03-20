@@ -14,5 +14,6 @@
 #include "SDL_audio.hpp"
 #include "SDL_bits.hpp"
 #include "SDL_blendmode.hpp"
+#include "SDL_camera.hpp"
 
 #endif //SDL_HPP
